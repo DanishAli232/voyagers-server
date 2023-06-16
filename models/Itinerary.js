@@ -13,6 +13,7 @@ const ItinerarySchema = new mongoose.Schema({
   eachDetail: [
     {
       day: { type: mongoose.Schema.Types.Number, required: true },
+      dayTitle: { type: mongoose.Schema.Types.String, required: true },
       stayDescription: { type: mongoose.Schema.Types.String, required: true },
       stayImages: [{ type: mongoose.Schema.Types.String, required: true }],
       tasteImages: [{ type: mongoose.Schema.Types.String, required: true }],

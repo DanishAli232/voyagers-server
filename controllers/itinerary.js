@@ -17,6 +17,11 @@ class Itinerary {
     const itinerary = await itineraryService.getSingleItinerary(itineraryId);
     return res.send(itinerary);
   }
+
+  async updateItinerary(req, res) {
+    const itinerary = await itineraryService.updateItinerary(req.body);
+    return res.send(itinerary);
+  }
 }
 
 export default new Itinerary();

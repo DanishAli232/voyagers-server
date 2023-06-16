@@ -7,6 +7,7 @@ const UserSchema = new Schema({
   password: { type: Schema.Types.String, required: true, select: false },
   accountId: { type: Schema.Types.String, select: false },
   isCompleted: { type: Schema.Types.Boolean },
+  role: { type: Schema.Types.String, enum: ["user", "seller"], default: "user" },
 });
 
 // Hash the user's password before saving it

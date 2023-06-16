@@ -25,7 +25,7 @@ class UserService {
     }
 
     // Passwords match, generate and return a JWT token
-    const token = jwt.sign({ id: user.id }, config.jwtSecretKey);
+    const token = jwt.sign({ id: user.id, role: user.role }, config.jwtSecretKey);
     return { token, status: "OK" };
   }
 
@@ -36,7 +36,7 @@ class UserService {
    * @param password password for registration
    * @param name password for registration
    **/
-  async addUser({ email, password, username }) {
+  async addUser({ email, password, username, role }) {
     // Check if the email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -44,11 +44,11 @@ class UserService {
     }
 
     // Create a new user
-    const newUser = new User({ email, password, username });
+    const newUser = new User({ email, password, username, role });
     await newUser.save();
 
     // Passwords match, generate and return a JWT token
-    const token = jwt.sign({ id: newUser.id }, config.jwtSecretKey);
+    const token = jwt.sign({ id: newUser.id, role: newUser.role }, config.jwtSecretKey);
 
     return { status: "OK", user: newUser, token };
   }
@@ -94,12 +94,17 @@ class UserService {
    * @param password password for registration
    * @param name name for registration
    **/
-  validateRegisterInput({ email, password, username }) {
+  validateRegisterInput({ email, password, username, role }) {
     const errors = {};
 
     // validate name
     if (!username || username?.trim() === "") {
       errors.username = "Username field shouldn't be empty";
+    }
+
+    // validate role
+    if (!role || (role?.trim() === "" && ["seller", "user"].includes(role))) {
+      errors.role = "role field shouldn't be empty";
     }
 
     // Validate email
@@ -124,7 +129,7 @@ class UserService {
     return {
       errors,
       isValid: Object.keys(errors).length === 0,
-      values: { email, password, username },
+      values: { email, password, username, role },
     };
   }
 }

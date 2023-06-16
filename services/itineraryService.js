@@ -20,6 +20,18 @@ class ItineraryService {
       console.log("\n\n\n\n Erorr", err);
     }
   }
+
+  async updateItinerary(data) {
+    try {
+      const itinerary = await Itinerary.findByIdAndUpdate(data.itineraryId, { $set: data });
+      console.log(itinerary);
+      await itinerary.save();
+      return itinerary;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
 }
 
 export default new ItineraryService();

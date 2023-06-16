@@ -8,6 +8,7 @@ var router = express.Router();
 router.post("/", passport.authenticate("jwt", { session: false }), Itinerary.addItinierary);
 router.get("/", passport.authenticate("jwt", { session: false }), Itinerary.getItineraries);
 router.get("/view/:itineraryId", passport.authenticate("jwt", { session: false }), Itinerary.getSingleItinerary);
+router.patch("", passport.authenticate("jwt", { session: false }), Itinerary.updateItinerary);
 // router.post("/add-user", UserController.addUser);
 // router.get("/verify-token", passport.authenticate("jwt", { session: false }), UserController.verifyToken);
 

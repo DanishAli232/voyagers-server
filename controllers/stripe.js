@@ -1,3 +1,4 @@
+import Itinerary from "../models/Itinerary.js";
 import User from "../models/User.js";
 import Stripe from "stripe";
 
@@ -21,7 +22,7 @@ class StripeController {
 
         userAccount.account_id = id;
         account_id = id;
-        await User.updateOne({ _id: req.user.id }, { $set: { accountId: id } });
+        await User.updateOne({ _id: req.user.id }, { $set: { accountId: id, role: "seller" } });
       }
 
       const accountLink = await stripe.accountLinks.create({
@@ -53,6 +54,47 @@ class StripeController {
       console.log(err);
       return res.send(err);
     }
+  }
+
+  async getUser(req, res) {
+    let userAccount = await User.findById(req.user.id).select("+accountId +isCompleted +role");
+
+    if (!userAccount.accountId) {
+      return res.send({ isCompleted: false });
+    } else {
+      return res.send({ isCompleted: true });
+    }
+  }
+
+  async checkout(req, res) {
+    let itinerary = await Itinerary.findById(req.body.itineraryId).populate({ path: "userId", select: "+accountId" });
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "USD",
+            unit_amount: Number(itinerary.price) * 100,
+            product_data: {
+              name: "Itinerary",
+              description: "This itinerary needs more info",
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      payment_intent_data: {
+        application_fee_amount: Number(itinerary.price) * 0.2,
+        transfer_data: {
+          destination: itinerary.userId.accountId,
+        },
+      },
+      success_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + "?status=success",
+      cancel_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + "?status=cancel",
+    });
+
+    return res.send(session.url);
   }
 }
 
