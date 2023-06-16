@@ -3,7 +3,13 @@ import itineraryService from "../services/itineraryService.js";
 class Itinerary {
   async addItinierary(req, res) {
     let values = req.body;
-    let itinerary = await itineraryService.addItinerary({ ...values, userId: req.user.id });
+
+    let itinerary = await itineraryService.addItinerary({
+      ...values,
+      userId: req.user.id,
+      image: req.file.path,
+      eachDetail: JSON.parse(values.eachDetail),
+    });
     return res.send(itinerary);
   }
 

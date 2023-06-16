@@ -18,14 +18,12 @@ const ExtractJWT = passportJWT.ExtractJwt;
 
 var app = express();
 
-const __filename = new URL(import.meta.url).pathname;
-const __dirname = path.dirname(__filename);
+app.use(express.static("public"));
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 // Passport JWT implementation

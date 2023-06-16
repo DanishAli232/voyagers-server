@@ -8,7 +8,10 @@ class ItineraryService {
 
   async getListing() {
     const itineraries = await Itinerary.find({}).populate("userId");
-    return itineraries;
+
+    let newItineraries = itineraries.map((each) => ({ ...each._doc, image: process.env.BASE_URL + "/" + each._doc.image }));
+    console.log(newItineraries);
+    return newItineraries;
   }
 
   async getSingleItinerary(id) {
@@ -24,7 +27,7 @@ class ItineraryService {
   async updateItinerary(data) {
     try {
       const itinerary = await Itinerary.findByIdAndUpdate(data.itineraryId, { $set: data });
-      console.log(itinerary);
+
       await itinerary.save();
       return itinerary;
     } catch (error) {

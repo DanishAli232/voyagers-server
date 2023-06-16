@@ -1,3 +1,4 @@
+import User from "../models/User.js";
 import userService from "../services/userService.js";
 
 class UserController {
@@ -30,6 +31,15 @@ class UserController {
       return res.status(201).send({ token });
     } else {
       return res.status(400).send(error);
+    }
+  }
+
+  async getUser(req, res) {
+    const user = await User.findById(req.user.id);
+    if (user) {
+      return res.send({ user });
+    } else {
+      return res.status(400).send({ error: "Something went wrong" });
     }
   }
 
