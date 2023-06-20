@@ -10,14 +10,18 @@ import passportJWT from "passport-jwt";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 import stripeRouter from "./routes/stripe.js";
+import webhookRouter from "./routes/webhookRoutes.js";
 import itineraryRouter from "./routes/itinerary.js";
 import config from "./config/config.js";
+import { handleWebhooks } from "./controllers/webhookController.js";
+import bodyParser from "body-parser";
 
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
 var app = express();
 
+app.use("/webhooks", bodyParser.raw({ type: "application/json" }), webhookRouter);
 app.use(express.static("public"));
 
 app.use(logger("dev"));

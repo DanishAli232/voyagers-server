@@ -6,8 +6,8 @@ class ItineraryService {
     return itinerary;
   }
 
-  async getListing() {
-    const itineraries = await Itinerary.find({}).populate("userId");
+  async getListing(query, limit) {
+    const itineraries = await Itinerary.find(query).populate("userId").limit(limit);
 
     return itineraries;
   }

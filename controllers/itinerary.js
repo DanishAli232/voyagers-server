@@ -19,7 +19,19 @@ class Itinerary {
   }
 
   async getItineraries(req, res) {
-    const itineraries = await itineraryService.getListing();
+    let query = req.query;
+    if (query.region) {
+      query.country = query.region;
+      delete query.region;
+    }
+    let limit;
+
+    if (query.limit) {
+      limit = query.limit;
+      delete query.limit;
+    }
+
+    const itineraries = await itineraryService.getListing(query, limit);
     return res.send(itineraries);
   }
 

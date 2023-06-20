@@ -1,10 +1,6 @@
 import Itinerary from "../models/Itinerary.js";
 import User from "../models/User.js";
-import Stripe from "stripe";
-
-const stripe = new Stripe(
-  "sk_test_51IJgivGnP7Wkn66NGXG1i8U8PtgNUqVlyAwx3TdQBkDkKBjkgiD1YkzZWLQIsSq77RLCXy5L4qBdV2P7lqq8MX2t00S2YWabq5"
-);
+import stripe from "../utils/stripe.js";
 
 class StripeController {
   async connect(req, res) {
@@ -68,9 +64,15 @@ class StripeController {
 
   async checkout(req, res) {
     let itinerary = await Itinerary.findById(req.body.itineraryId).populate({ path: "userId", select: "+accountId" });
+    const user = await User.findById(req.user.id).select("+email");
+    if (!user) {
+      return res.send({ errors: "errors" });
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      customer_email: user.email,
+      metadata: { itinerary: itinerary._id.toString() },
       line_items: [
         {
           price_data: {

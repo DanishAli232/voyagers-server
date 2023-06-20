@@ -8,6 +8,7 @@ const UserSchema = new Schema({
   accountId: { type: Schema.Types.String, select: false },
   isCompleted: { type: Schema.Types.Boolean },
   role: { type: Schema.Types.String, enum: ["user", "seller"], default: "user" },
+  boughtItineraries: [{ type: Schema.Types.ObjectId, ref: "Itinerary" }],
 });
 
 // Hash the user's password before saving it
