@@ -8,12 +8,13 @@ class Itinerary {
     if (!isValid) {
       return res.status(400).json(errors);
     }
+    let image = req.files.find((each) => each.fieldname === "image");
 
     let itinerary = await itineraryService.addItinerary({
       ...values,
       userId: req.user.id,
-      image: process.env.BASE_URL + "/img/" + req.file.filename,
-      eachDetail: JSON.parse(values.eachDetail),
+      image: process.env.BASE_URL + "/img/" + image?.filename,
+      eachDetail: parseData,
     });
     return res.send(itinerary);
   }

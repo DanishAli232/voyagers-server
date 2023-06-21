@@ -25,34 +25,40 @@ class ItineraryService {
   parseImages(files, data) {
     let eachDetail = JSON.parse(data.eachDetail);
     // let eachData = [{}];
-    eachDetail.map((each, idx) => {
-      let objData = { stayImages: [] };
+    return eachDetail.map((each, idx) => {
+      let objData = { stayImages: [], tasteImages: [], experienceImages: [], vibeImages: [], ...each };
       files
         .filter((each) => each.fieldname !== "image")
         .map((file, idx) => {
-          if (file.fieldname === `eachDetail[${each.day}].stayImages[${idx}]`) {
-            objData = { ...each, stayImages: [...objData.stayImages, `${process.env.BASE_URL}/img/${file.filename}`] };
-          }
-          if (file.fieldname === `eachDetail[${each.day}].experienceImages[${idx}]`) {
+          if (file.fieldname.includes(`eachDetail[${each.day}].stayImages[`)) {
             objData = {
-              ...each,
+              ...objData,
+              stayImages: [...objData.stayImages, `${process.env.BASE_URL}/img/${file.filename}`],
+            };
+          }
+          
+          if (file.fieldname.includes(`eachDetail[${each.day}].experienceImages[`)) {
+            objData = {
+              ...objData,
               experienceImages: [...objData.experienceImages, `${process.env.BASE_URL}/img/${file.filename}`],
             };
           }
-          if (file.fieldname === `eachDetail[${each.day}].vibeImages[${idx}]`) {
+          
+          if (file.fieldname.includes(`eachDetail[${each.day}].vibeImages[`)) {
             objData = {
-              ...each,
-              experienceImages: [...objData.experienceImages, `${process.env.BASE_URL}/img/${file.filename}`],
+              ...objData,
+              vibeImages: [...objData.vibeImages, `${process.env.BASE_URL}/img/${file.filename}`],
             };
           }
-          if (file.fieldname === `eachDetail[${each.day}].tasteImages[${idx}]`) {
+          
+          if (file.fieldname.includes(`eachDetail[${each.day}].tasteImages[`)) {
             objData = {
-              ...each,
+              ...objData,
               tasteImages: [...objData.tasteImages, `${process.env.BASE_URL}/img/${file.filename}`],
             };
           }
         });
-      console.log(objData);
+      return objData;
     });
   }
 
@@ -80,6 +86,11 @@ class ItineraryService {
       errors.country = "Country field shouldn't be empty";
     }
 
+    // validate Price
+    if (!data.price || data.price?.trim() === "") {
+      errors.price = "Price field shouldn't be empty";
+    }
+
     // validate Introduction
     if (!data.introduction || data.introduction?.trim() === "") {
       errors.introduction = "Introduction field shouldn't be empty";
@@ -91,6 +102,7 @@ class ItineraryService {
     }
 
     // validate category
+    data.category = JSON.parse(data.category);
     if (!data.category || data.category.length < 1) {
       errors.category = "Category field shouldn't be empty";
     }
