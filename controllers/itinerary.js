@@ -31,6 +31,7 @@ class Itinerary {
       limit = query.limit;
       delete query.limit;
     }
+    console.log(query)
 
     const itineraries = await itineraryService.getListing(query, limit);
     return res.send(itineraries);
