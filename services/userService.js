@@ -15,7 +15,7 @@ class UserService {
     const user = await User.findOne({ email }).select("+password +email");
 
     if (!user) {
-      return { error: { message: "User not found" }, status: "NO" };
+      return { error: { message: "Invalid email or password" }, status: "NO" };
     }
 
     // Compare the provided password with the hashed password in the database

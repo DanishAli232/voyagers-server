@@ -43,7 +43,24 @@ class Itinerary {
   }
 
   async updateItinerary(req, res) {
-    const itinerary = await itineraryService.updateItinerary(req.body);
+    let { values, errors, isValid } = itineraryService.validateItineraryInput(req.body, req.files);
+    const parseData = itineraryService.parseImages(req.files, req.body);
+    let itineraryId = req.params.itineraryId;
+
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+    let image = req.files?.find((each) => each.fieldname === "image");
+
+    let itinerary = await itineraryService.updateItinerary(
+      {
+        ...values,
+        userId: req.user.id,
+        image: image ? process.env.BASE_URL + "/img/" + image?.filename : req.body.image,
+        eachDetail: parseData,
+      },
+      itineraryId
+    );
     return res.send(itinerary);
   }
 }

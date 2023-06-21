@@ -26,7 +26,13 @@ class ItineraryService {
     let eachDetail = JSON.parse(data.eachDetail);
     // let eachData = [{}];
     return eachDetail.map((each, idx) => {
-      let objData = { stayImages: [], tasteImages: [], experienceImages: [], vibeImages: [], ...each };
+      let objData = {
+        stayImages: each.stayImages ? [...each.stayImages] : [],
+        tasteImages: each.tasteImages ? [...each.tasteImages] : [],
+        experienceImages: each.experienceImages ? [...each.experienceImages] : [],
+        vibeImages: each.vibeImages ? [...each.vibeImages] : [],
+        ...each,
+      };
       files
         .filter((each) => each.fieldname !== "image")
         .map((file, idx) => {
@@ -36,21 +42,21 @@ class ItineraryService {
               stayImages: [...objData.stayImages, `${process.env.BASE_URL}/img/${file.filename}`],
             };
           }
-          
+
           if (file.fieldname.includes(`eachDetail[${each.day}].experienceImages[`)) {
             objData = {
               ...objData,
               experienceImages: [...objData.experienceImages, `${process.env.BASE_URL}/img/${file.filename}`],
             };
           }
-          
+
           if (file.fieldname.includes(`eachDetail[${each.day}].vibeImages[`)) {
             objData = {
               ...objData,
               vibeImages: [...objData.vibeImages, `${process.env.BASE_URL}/img/${file.filename}`],
             };
           }
-          
+
           if (file.fieldname.includes(`eachDetail[${each.day}].tasteImages[`)) {
             objData = {
               ...objData,
@@ -62,11 +68,12 @@ class ItineraryService {
     });
   }
 
-  async updateItinerary(data) {
+  async updateItinerary(data, itineraryId) {
     try {
-      const itinerary = await Itinerary.findByIdAndUpdate(data.itineraryId, { $set: data });
+      // console.log("Data", data, "Data");
+      const itinerary = await Itinerary.findByIdAndUpdate(itineraryId, { $set: data });
 
-      await itinerary.save();
+      // await itinerary.save();
       return itinerary;
     } catch (error) {
       console.log(error);
@@ -74,7 +81,7 @@ class ItineraryService {
     }
   }
 
-  validateItineraryInput(data) {
+  validateItineraryInput(data, files) {
     let errors = {};
     // validate Title
     if (!data.title || data.title?.trim() === "") {
@@ -96,6 +103,16 @@ class ItineraryService {
       errors.introduction = "Introduction field shouldn't be empty";
     }
 
+    // validate Image
+    if (!files || !files.find((each) => each.fieldname === "image")) {
+      errors.image = "Images shouldn't be empty";
+    }
+
+    // validate Image
+    if (!files) {
+      errors.introduction = "Introduction field shouldn't be empty";
+    }
+
     // validate Sales Pitch
     if (!data.salesPitch || data.salesPitch?.trim() === "") {
       errors.salesPitch = "Sales Pitch field shouldn't be empty";
@@ -110,7 +127,16 @@ class ItineraryService {
     return {
       errors,
       isValid: Object.keys(errors).length === 0,
-      values: data,
+      values: {
+        country: data.country,
+        price: data.price,
+        category: data.category,
+        introduction: data.introduction,
+        salesPitch: data.salesPitch,
+        image: data.image,
+        eachDetail: data.eachDetail,
+        title: data.title,
+      },
     };
   }
 }

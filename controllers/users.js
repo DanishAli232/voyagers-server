@@ -6,7 +6,7 @@ class UserController {
     let { values, isValid, errors } = userService.validateLoginInput(req.body);
 
     if (!isValid) {
-      res.status(400).json(errors);
+      return res.status(400).json(errors);
     }
 
     let { status, token, error } = await userService.loginUser(values);
