@@ -31,7 +31,6 @@ class Itinerary {
       limit = query.limit;
       delete query.limit;
     }
-    console.log(query)
 
     const itineraries = await itineraryService.getListing(query, limit);
     return res.send(itineraries);
@@ -62,6 +61,12 @@ class Itinerary {
       },
       itineraryId
     );
+    return res.send(itinerary);
+  }
+
+  async deleteDay(req, res) {
+    const itinerary = await itineraryService.deleteDay(req.body.itineraryId, req.body.newValues);
+
     return res.send(itinerary);
   }
 }

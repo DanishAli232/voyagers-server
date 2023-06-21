@@ -22,6 +22,13 @@ class ItineraryService {
     }
   }
 
+  async deleteDay(id, data) {
+    console.log(id, data);
+    const itinerary = await Itinerary.findByIdAndUpdate(id, { $set: { eachDetail: data } });
+    console.log(itinerary);
+    return itinerary;
+  }
+
   parseImages(files, data) {
     let eachDetail = JSON.parse(data.eachDetail);
     // let eachData = [{}];
