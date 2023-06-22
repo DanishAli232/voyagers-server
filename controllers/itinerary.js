@@ -3,7 +3,7 @@ import itineraryService from "../services/itineraryService.js";
 
 class Itinerary {
   async addItinierary(req, res) {
-    let { values, errors, isValid } = itineraryService.validateItineraryInput(req.body);
+    let { values, errors, isValid } = itineraryService.validateItineraryInput(req.body, req.files);
     const parseData = itineraryService.parseImages(req.files, req.body);
 
     if (!isValid) {
