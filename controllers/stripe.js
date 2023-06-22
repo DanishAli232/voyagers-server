@@ -45,7 +45,7 @@ class StripeController {
         User.updateOne({ _id: userAccount._id }, { $set: { isCompleted: true } });
       }
 
-      return res.redirect("https://localhost:3000");
+      return res.redirect(process.env.HOST_URL + "/itinerary/me");
     } catch (err) {
       console.log(err);
       return res.send(err);

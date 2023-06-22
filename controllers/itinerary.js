@@ -1,3 +1,4 @@
+import User from "../models/User.js";
 import itineraryService from "../services/itineraryService.js";
 
 class Itinerary {
@@ -31,6 +32,46 @@ class Itinerary {
       limit = query.limit;
       delete query.limit;
     }
+
+    const itineraries = await itineraryService.getListing(query, limit);
+    return res.send(itineraries);
+  }
+
+  async getPurchasedItineraries(req, res) {
+    let user = await User.findById(req.user.id).select("boughtItineraries");
+
+    let query = req.query;
+    if (query.region) {
+      query.country = query.region;
+      delete query.region;
+    }
+    let limit;
+
+    query._id = { $in: user.boughtItineraries };
+
+    if (query.limit) {
+      limit = query.limit;
+      delete query.limit;
+    }
+
+    const itineraries = await itineraryService.getListing(query, limit);
+    return res.send(itineraries);
+  }
+
+  async getMyItineraries(req, res) {
+    let query = req.query;
+    if (query.region) {
+      query.country = query.region;
+      delete query.region;
+    }
+    let limit;
+
+    if (query.limit) {
+      limit = query.limit;
+      delete query.limit;
+    }
+
+    query.userId = req.user.id;
 
     const itineraries = await itineraryService.getListing(query, limit);
     return res.send(itineraries);

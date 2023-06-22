@@ -1,5 +1,4 @@
 import express from "express";
-import UserController from "../controllers/users.js";
 import passport from "passport";
 import Itinerary from "../controllers/itinerary.js";
 import upload from "../utils/multer.js";
@@ -8,6 +7,8 @@ var router = express.Router();
 /* GET users listing. */
 router.post("/", [passport.authenticate("jwt", { session: false }), upload.any()], Itinerary.addItinierary);
 router.get("/", Itinerary.getItineraries);
+router.get("/purchased", passport.authenticate("jwt", { session: false }), Itinerary.getPurchasedItineraries);
+router.get("/list/me", passport.authenticate("jwt", { session: false }), Itinerary.getMyItineraries);
 router.get("/view/:itineraryId", passport.authenticate("jwt", { session: false }), Itinerary.getSingleItinerary);
 router.patch("/deleteDay", passport.authenticate("jwt", { session: false }), Itinerary.deleteDay);
 router.patch(

@@ -23,9 +23,7 @@ class ItineraryService {
   }
 
   async deleteDay(id, data) {
-    console.log(id, data);
     const itinerary = await Itinerary.findByIdAndUpdate(id, { $set: { eachDetail: data } });
-    console.log(itinerary);
     return itinerary;
   }
 
@@ -113,11 +111,6 @@ class ItineraryService {
     // validate Image
     if (!files || !files.find((each) => each.fieldname === "image")) {
       errors.image = "Images shouldn't be empty";
-    }
-
-    // validate Image
-    if (!files) {
-      errors.introduction = "Introduction field shouldn't be empty";
     }
 
     // validate Sales Pitch
