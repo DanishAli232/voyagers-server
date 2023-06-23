@@ -54,6 +54,33 @@ class UserService {
   }
 
   /**
+   * updateUser
+   ** Updates user profile
+   * @param email email to update
+   * @param username username to update
+   * @param image image to update
+   * @param userId userId of the user to be updated
+   **/
+  async updateUser(data, userId) {
+    const values = {};
+
+    if (data.username) {
+      values.username = data.username;
+    }
+
+    if (data.email) {
+      values.email = data.email;
+    }
+
+    if (data.image) {
+      values.image = data.image;
+    }
+
+    const user = await User.findByIdAndUpdate(userId, { $set: data });
+    return user;
+  }
+
+  /**
    * validateLoginInput
    ** Validates input for login
    * @param email email for login

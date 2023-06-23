@@ -35,7 +35,7 @@ class UserController {
   }
 
   async getUser(req, res) {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select("+email");
     if (user) {
       return res.send({ user });
     } else {
@@ -45,6 +45,17 @@ class UserController {
 
   verifyToken(req, res) {
     return res.status(200).json({ message: "Token verified" });
+  }
+
+  async updateUser(req, res) {
+    let image;
+    if (req.file) {
+      image = process.env.BASE_URL + "/img/" + req.file?.filename;
+    }
+
+    const user = await userService.updateUser({ ...req.body, image }, req.user.id);
+
+    return res.send(user);
   }
 }
 
