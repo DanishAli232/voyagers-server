@@ -86,6 +86,15 @@ class ItineraryService {
     }
   }
 
+  async deleteItinerary(id, userId) {
+    try {
+      const itinerary = await Itinerary.deleteOne({ _id: id });
+      return itinerary;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   validateItineraryInput(data, files) {
     let errors = {};
     // validate Title

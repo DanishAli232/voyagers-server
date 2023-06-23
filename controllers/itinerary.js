@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import itineraryService from "../services/itineraryService.js";
+import ItineraryModel from "../models/Itinerary.js";
 
 class Itinerary {
   async addItinierary(req, res) {
@@ -109,6 +110,30 @@ class Itinerary {
     const itinerary = await itineraryService.deleteDay(req.body.itineraryId, req.body.newValues);
 
     return res.send(itinerary);
+  }
+
+  async deleteItinerary(req, res) {
+    const itinerary = await ItineraryModel.findById(req.params.itinerary);
+    if (!itinerary) {
+      return res.status(400).json({ message: "Itinerary not found or you or not authorized" });
+    }
+    if (itinerary.userId.toString() === req.user.id) {
+      const itinerary = await itineraryService.deleteItinerary(req.params.itinerary);
+      const query = {};
+
+      query.userId = req.user.id;
+
+      const itineraries = await itineraryService.getListing(query);
+
+      console.log(itinerary);
+      if (itinerary.deletedCount === 1) {
+        return res.json(itineraries);
+      }
+
+      return res.status(500).send({ message: "Something went wrong" });
+    }
+
+    return res.status(400).json({ message: "You are not authorized to delete this itinerary" });
   }
 }
 
