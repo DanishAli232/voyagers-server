@@ -12,6 +12,11 @@ class StripeController {
       if (!account_id) {
         const accountObj = await stripe.accounts.create({
           type: "express",
+          capabilities: {
+            transfers: {
+              requested: true,
+            },
+          },
         });
 
         const { id } = accountObj;
