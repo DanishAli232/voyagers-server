@@ -34,6 +34,8 @@ class Itinerary {
       delete query.limit;
     }
 
+    // query["userId.stripeConnected"] = true;
+
     const itineraries = await itineraryService.getListing(query, limit);
     return res.send(itineraries);
   }
@@ -54,6 +56,8 @@ class Itinerary {
       limit = query.limit;
       delete query.limit;
     }
+
+    // query["userId.stripeConnected"] = true;
 
     const itineraries = await itineraryService.getListing(query, limit);
     return res.send(itineraries);

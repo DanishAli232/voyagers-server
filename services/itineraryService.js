@@ -9,7 +9,9 @@ class ItineraryService {
   async getListing(query, limit) {
     const itineraries = await Itinerary.find(query).populate("userId").limit(limit);
 
-    return itineraries;
+    let filteredItineraries = itineraries.filter((each) => each.userId.stripeConnected);
+
+    return filteredItineraries;
   }
 
   async getSingleItinerary(id) {

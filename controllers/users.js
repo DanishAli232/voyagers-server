@@ -37,11 +37,18 @@ class UserController {
 
   async getUser(req, res) {
     const user = await User.findById(req.user.id).select("+email +accountId");
-    if (user) {
-      const destinationAccount = await stripe.accounts.retrieve(user.accountId);
-      console.log(destinationAccount.capabilities);
 
-      return res.send({ user: { ...user._doc, stripeConnected: destinationAccount?.capabilities?.transfers === "active" } });
+    const destinationAccount = await stripe.accounts.retrieve(user.accountId);
+    res.send({
+      user: { ...user._doc, stripeConnected: destinationAccount?.capabilities?.transfers === "active" },
+    });
+
+    if (user) {
+      let updatedUser = await User.findByIdAndUpdate(req.user.id, {
+        $set: { stripeConnected: destinationAccount?.capabilities?.transfers === "active" },
+      });
+      console.log(updatedUser);
+      return;
     } else {
       return res.status(400).send({ error: "Something went wrong" });
     }
