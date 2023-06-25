@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import userService from "../services/userService.js";
+import stripe from "../utils/stripe.js";
 
 class UserController {
   async login(req, res) {
@@ -35,9 +36,12 @@ class UserController {
   }
 
   async getUser(req, res) {
-    const user = await User.findById(req.user.id).select("+email");
+    const user = await User.findById(req.user.id).select("+email +accountId");
     if (user) {
-      return res.send({ user });
+      const destinationAccount = await stripe.accounts.retrieve(user.accountId);
+      console.log(destinationAccount.capabilities);
+
+      return res.send({ user: { ...user._doc, stripeConnected: destinationAccount?.capabilities?.transfers === "active" } });
     } else {
       return res.status(400).send({ error: "Something went wrong" });
     }

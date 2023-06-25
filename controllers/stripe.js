@@ -67,6 +67,23 @@ class StripeController {
     }
   }
 
+  async getStripeAccount(req, res) {
+    try {
+      const user = await User.findById(req.user.id).select("+accountId");
+      const account = await stripe.accountLinks.create({
+        account: user.accountId,
+        type: "account_onboarding",
+        refresh_url: process.env.HOST_URL,
+
+        return_url: process.env.HOST_URL,
+      });
+
+      return res.send(account.url);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async checkout(req, res) {
     let itinerary = await Itinerary.findById(req.body.itineraryId).populate({ path: "userId", select: "+accountId" });
     const user = await User.findById(req.user.id).select("+email");

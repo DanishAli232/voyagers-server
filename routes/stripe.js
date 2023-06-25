@@ -7,6 +7,7 @@ var router = express.Router();
 router.get("/user-details", passport.authenticate("jwt", { session: false }), StripeController.getUser);
 router.post("/connect-stripe", passport.authenticate("jwt", { session: false }), StripeController.connect);
 router.post("/checkout", passport.authenticate("jwt", { session: false }), StripeController.checkout);
+router.get("/get-account-links", passport.authenticate("jwt", { session: false }), StripeController.getStripeAccount);
 router.get("/return", StripeController.returnAcc);
 
 export default router;
