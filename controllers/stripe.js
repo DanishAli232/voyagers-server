@@ -92,7 +92,7 @@ class StripeController {
         },
       ],
       payment_intent_data: {
-        application_fee_amount: Number(itinerary.price) * 0.2,
+        application_fee_amount: Number(itinerary.price) * 100 * 0.2,
         transfer_data: {
           destination: itinerary.userId.accountId,
         },
