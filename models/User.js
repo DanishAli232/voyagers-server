@@ -1,6 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
 import hashPassword from "../utils/hashPassword.js";
-import { MongooseFindByReference } from "mongoose-find-by-reference";
 
 const UserSchema = new Schema({
   username: { type: Schema.Types.String, required: true },
@@ -16,7 +15,5 @@ const UserSchema = new Schema({
 
 // Hash the user's password before saving it
 UserSchema.pre("save", hashPassword);
-
-UserSchema.plugin(MongooseFindByReference);
 
 export default model("User", UserSchema);
