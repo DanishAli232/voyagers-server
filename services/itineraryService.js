@@ -120,7 +120,7 @@ class ItineraryService {
     }
 
     // validate Image
-    if (!files || !files.find((each) => each.fieldname === "image")) {
+    if (!data.image && (!files || !files.find((each) => each.fieldname === "image"))) {
       errors.image = "Images shouldn't be empty";
     }
 
