@@ -1,6 +1,7 @@
 import Itinerary from "../models/Itinerary.js";
 import User from "../models/User.js";
 import stripe from "../utils/stripe.js";
+import nodemailer from "nodemailer";
 
 class StripeController {
   async connect(req, res) {
@@ -23,7 +24,10 @@ class StripeController {
 
         userAccount.account_id = id;
         account_id = id;
-        await User.updateOne({ _id: req.user.id }, { $set: { accountId: id, role: "seller" } });
+        await User.updateOne(
+          { _id: req.user.id },
+          { $set: { accountId: id, role: "seller" } }
+        );
       }
 
       const accountLink = await stripe.accountLinks.create({
@@ -43,11 +47,16 @@ class StripeController {
 
   async returnAcc(req, res) {
     try {
-      let userAccount = await User.findById(req.query.userId).select("+accountId");
+      let userAccount = await User.findById(req.query.userId).select(
+        "+accountId"
+      );
       let stripeAccount = await stripe.accounts.retrieve(userAccount.accountId);
 
       if (stripeAccount.details_submitted) {
-        User.updateOne({ _id: userAccount._id }, { $set: { isCompleted: true } });
+        User.updateOne(
+          { _id: userAccount._id },
+          { $set: { isCompleted: true } }
+        );
       }
 
       return res.redirect(process.env.HOST_URL + "/itinerary/me");
@@ -58,7 +67,9 @@ class StripeController {
   }
 
   async getUser(req, res) {
-    let userAccount = await User.findById(req.user.id).select("+accountId +isCompleted +role");
+    let userAccount = await User.findById(req.user.id).select(
+      "+accountId +isCompleted +role"
+    );
 
     if (!userAccount.accountId) {
       return res.send({ isCompleted: false });
@@ -85,7 +96,10 @@ class StripeController {
   }
 
   async checkout(req, res) {
-    let itinerary = await Itinerary.findById(req.body.itineraryId).populate({ path: "userId", select: "+accountId" });
+    let itinerary = await Itinerary.findById(req.body.itineraryId).populate({
+      path: "userId",
+      select: "+accountId",
+    });
     const user = await User.findById(req.user.id).select("+email");
     if (!user) {
       return res.send({ errors: "errors" });
@@ -114,10 +128,20 @@ class StripeController {
           destination: itinerary.userId.accountId,
         },
       },
-      success_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + "?status=success",
-      cancel_url: process.env.HOST_URL + "/itinerary/view/" + itinerary._id + "?status=cancel",
-    });
+      // success_url: `http://localhost:3000/itinerary/view/${itinerary._id}?status=success&&check=${req.body.isChecked}`,
+      success_url:
+        process.env.HOST_URL +
+        "/itinerary/view/" +
+        itinerary._id +
+        "?status=success",
+      cancel_url:
+        process.env.HOST_URL +
+        "/itinerary/view/" +
+        itinerary._id +
+        "?status=cancel",
 
+      // cancel_url: `http://localhost:3000/${itinerary._id}?status=cancel`,
+    });
     return res.send(session.url);
   }
 }

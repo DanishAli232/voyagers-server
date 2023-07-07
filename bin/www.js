@@ -90,7 +90,8 @@ function onListening() {
   debug("Listening on " + bind);
 
   mongoose
-    .connect("mongodb+srv://admin:EOfhNL9wHxznxOjp@cluster0.5ubix.mongodb.net/?retryWrites=true&w=majority", {
+    // .connect("mongodb+srv://admin:EOfhNL9wHxznxOjp@cluster0.5ubix.mongodb.net/?retryWrites=true&w=majority", {
+    .connect(process.env.MONGODB_URL, {
       useNewUrlParser: true,
       dbName: "Voyagers",
       useUnifiedTopology: true,
